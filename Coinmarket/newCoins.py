@@ -24,55 +24,55 @@ yesterday_datetime = datetime.datetime.strptime(yesterday, '%Y-%m-%d')
 clear_console = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 
 list_old = []
-list_new = []
  
 def new_coins(cont,vali):
     
+       
+    global list_old
+    
+ 
     try:
         
-        list_new.clear()
+        list_new = []
+        
         
         for i in range(0,len(data), 1):
             name = data[i]['slug']
             date_added_str = data[i]['date_added'][:10]
             date_added = datetime.datetime.strptime(date_added_str, '%Y-%m-%d')
             
-            
-            if cont == 0:
-
-                if yesterday_datetime < date_added:
-                    #list_new.append(name)
-                    list_old.append(name)
-
-                    #print(name," : ",date_added_str)
-                    
-            else:
+           
+            if yesterday_datetime < date_added:
                 
-                if yesterday_datetime < date_added:
-                    list_new.append(name)
-                    
-                
+                list_new.append(name)
+
+                          
                 
         if cont != 0:
             
-            #print("List Old")
-            #print(list_old)
+            list_new.append('btc')
+          
             check_lists(list_new)
+            list_old = list(list_new)
             
             
         else:
-            print("List Old")
-            print(list_old)
-            #for i in list_old:
-                #print(i)
-        
-        #print(list_old)       
+            
+            print("List New:\n")
+            for i in list_new:
+                print(i)
+            
+            list_old = list(list_new)
+                   
           
     except (ConnectionError, Timeout, TooManyRedirects) as e:
         print(e)
         
         
 def check_lists(list_n):
+    
+    global list_old
+    
     new = []
     vali = False
 
@@ -87,35 +87,29 @@ def check_lists(list_n):
         for i in new:
             print(i)
             
-        
-
     else:
         print("No hay monedas nuevas")
-        
-    list_old = list_n
+    
+
 
 def delay(period,message):
     how_often =  sched.scheduler(time.time,time.sleep)
     how_often.enterabs(period,1,print,argument=(message,))
-    print("Se mostrará un mensaje cada: 10 segundos ")
+    print("\n\nSe mostrará un mensaje cada: 30 minutos ")
     how_often.run()
     
-
-
+    
 
 cont = 0
 vali = True
 
-list_new2 = ['btc']
 
 while True:
     
     new_coins(cont,vali)
-    time.sleep(5)
+    delay(time.time()+1800,"Ejecutando")
     clear_console()
     cont = cont + 1
     
-#while True:
-    
-    #delay(time.time()+10,"ejecutando una función")
+
     
