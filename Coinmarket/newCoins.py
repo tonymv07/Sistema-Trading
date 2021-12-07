@@ -50,8 +50,6 @@ def new_coins(cont,vali):
                 
         if cont != 0:
             
-            list_new.append('btc')
-          
             check_lists(list_new)
             list_old = list(list_new)
             
@@ -61,7 +59,6 @@ def new_coins(cont,vali):
             print("List New:\n")
             for i in list_new:
                 print(i)
-            
             list_old = list(list_new)
                    
           
