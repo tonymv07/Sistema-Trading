@@ -16,38 +16,48 @@ headers = {
   'X-CMC_PRO_API_KEY': 'da62bf9d-971f-4a45-abd1-d6c558606b01',
 }
 
-response = requests.get(url, params = parameters, headers = headers)
-data = response.json()['data']
-today = date.today()
-yesterday = str(today - timedelta(days=2))
-yesterday_datetime = datetime.datetime.strptime(yesterday, '%Y-%m-%d')
-clear_console = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 
+
+clear_console = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 list_old = []
+
  
-def new_coins(cont,vali):
+def new_coins(cont):
     
-       
+    response = requests.get(url, params = parameters, headers = headers)
+    data = response.json()['data']
+    today = date.today()
+    yesterday = str(today - timedelta(days=1))
+    yesterday_datetime = datetime.datetime.strptime(yesterday, '%Y-%m-%d')
+    
+
     global list_old
     
- 
     try:
         
         list_new = []
         
-        
         for i in range(0,len(data), 1):
             name = data[i]['slug']
+            date_add = data[i]['date_added']
+            #json['name'] = data[i]['name']
+            #json['date_added'] = data[i]['date_added']
             date_added_str = data[i]['date_added'][:10]
             date_added = datetime.datetime.strptime(date_added_str, '%Y-%m-%d')
-            
-           
+            date_dt = datetime.datetime.strptime(date_add, '%Y-%m-%dT%H:%M:%S'+'.000Z')
+        
             if yesterday_datetime < date_added:
+                #print(date_dt)
+                json = {}
+                json['name'] = data[i]['name']
+                json['date_added'] = data[i]['date_added']
+                json['price'] = data[i]['quote']['USD']['price']
+                json['id'] = data[i]['id']
+                list_new.append(json)
                 
-                list_new.append(name)
-
-                          
-                
+                       
+        order_list(list_new)
+                  
         if cont != 0:
             
             check_lists(list_new)
@@ -59,6 +69,7 @@ def new_coins(cont,vali):
             print("List New:\n")
             for i in list_new:
                 print(i)
+            print(len(list_new))
             list_old = list(list_new)
                    
           
@@ -89,22 +100,32 @@ def check_lists(list_n):
     
 
 
-def delay(period,message):
-    how_often =  sched.scheduler(time.time,time.sleep)
-    how_often.enterabs(period,1,print,argument=(message,))
+def delay(period):
+    
     print("\n\nSe mostrará un mensaje cada: 30 minutos ")
-    how_often.run()
+    time.sleep(period)
+    
+
+def order_list(list_n):
+    
+    for i in range(0,len(list_n),1):
+        for j in range(0,len(list_n)-1,1):
+            if list_n[j]['date_added'] < list_n[j+1]['date_added']:
+                aux = list_n[j]
+                list_n[j] = list_n[j+1]
+                list_n[j+1] = aux     
     
     
 
-cont = 0
-vali = True
-
-
+    
+    
+    
+cont = 0                                      
+                                        
 while True:
     
-    new_coins(cont,vali)
-    delay(time.time()+1800,"Ejecutando")
+    new_coins(cont)
+    delay(1800)
     clear_console()
     cont = cont + 1
     

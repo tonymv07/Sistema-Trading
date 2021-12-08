@@ -19,7 +19,7 @@ response = requests.get(url, params = parameters, headers = headers)
 data = response.json()['data']
 today = date.today()
 yesterday = str(today - timedelta(days=1))
-yesterday_datetime = datetime.datetime.strptime(yesterday, '%Y-%m-%d')
+yesterday_datetime = datetime.datetime.strptime(yesterday, '%d-%m-%Y')
 
 clearConsole = lambda: os.system('cls' if os.name in ('nt', 'dos') else 'clear')
 
@@ -34,7 +34,7 @@ def newCoins():
             symbol = data[i]['symbol']
             price = data[i]['quote']['USD']['price']
             date_added_str = data[i]['date_added'][:10]
-            date_added = datetime.datetime.strptime(date_added_str, '%Y-%m-%d')
+            date_added = datetime.datetime.strptime(date_added_str, '%d-%m-%Y')
 
             if yesterday_datetime < date_added:
                 #print(data)
